@@ -1,6 +1,7 @@
 /*
  * TODO: Add your name and student number here, along with
  *       a brief description of this code.
+  * Leah Marie Ayoub - X00217593
  */
 
 #include <stdio.h>
