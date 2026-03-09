@@ -6,7 +6,13 @@ jobs:
     steps:
       - name: Clone the repo
         uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
       - name: Build the code
         run: |
-          sudo apt install -y build-essential python-is-python3
-          make
+          sudo apt update
+          sudo apt install -y build-essential python-is-python3 python3-pytest
+          make clean && make
+      - name: Run tests
+        run: |
+          pytest -q
