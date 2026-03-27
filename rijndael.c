@@ -137,24 +137,25 @@ void invert_sub_bytes(unsigned char *block, aes_block_size_t block_size) {
 }
 
 void invert_shift_rows(unsigned char *block, aes_block_size_t block_size) {
-unsigned char temp = block[13];
+  unsigned char temp = block[1];
+  block[1] = block[13];
   block[13] = block[9];
   block[9] = block[5];
-  block[5] = block[1];
-  block[1] = temp;
+  block[5] = temp;
 
   temp = block[2];
   block[2] = block[10];
   block[10] = temp;
+  
   temp = block[6];
   block[6] = block[14];
   block[14] = temp;
 
   temp = block[3];
-  block[3] = block[15];
-  block[15] = block[11];
-  block[11] = block[7];
-  block[7] = temp;
+  block[3] = block[7];
+  block[7] = block[11];
+  block[11] = block[15];
+  block[15] = temp;
 }
 
 void invert_mix_columns(unsigned char *block, aes_block_size_t block_size) {
