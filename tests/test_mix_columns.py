@@ -35,10 +35,10 @@ def test_mix_columns_random(lib):
         aes.mix_columns(matrix)
         expected = aes.matrix2bytes(matrix)
 
-    buf = (c_ubyte * 16)(*random_input)
-    lib.mix_columns(buf, AES_BLOCK_128)
-    # Assert that the output matches the expected output
-    assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
+        buf = (c_ubyte * 16)(*random_input)
+        lib.mix_columns(buf, AES_BLOCK_128)
+        # Assert that the output matches the expected output
+        assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
 
 def test_invert_mix_columns_random(lib):
     for _ in range(3):  # Run the test 3 times with random inputs
@@ -50,7 +50,7 @@ def test_invert_mix_columns_random(lib):
         aes.inv_mix_columns(matrix)
         expected = aes.matrix2bytes(matrix)
 
-    buf = (c_ubyte * 16)(*random_input)
-    lib.invert_mix_columns(buf, AES_BLOCK_128)
-    # Assert that the output matches the expected output
-    assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
+        buf = (c_ubyte * 16)(*random_input)
+        lib.invert_mix_columns(buf, AES_BLOCK_128)
+        # Assert that the output matches the expected output
+        assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"

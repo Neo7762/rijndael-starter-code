@@ -35,10 +35,10 @@ def test_shift_rows_random(lib):
         aes.shift_rows(matrix)
         expected = aes.matrix2bytes(matrix)
 
-    buf = (c_ubyte * 16)(*random_input)
-    lib.shift_rows(buf, AES_BLOCK_128)
-    # Assert that the output matches the expected output
-    assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
+        buf = (c_ubyte * 16)(*random_input)
+        lib.shift_rows(buf, AES_BLOCK_128)
+        # Assert that the output matches the expected output
+        assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
 
 def test_invert_shift_rows_random(lib):
     for _ in range(3):  # Run the test 3 times with random inputs
@@ -50,7 +50,7 @@ def test_invert_shift_rows_random(lib):
         aes.inv_shift_rows(matrix)
         expected = aes.matrix2bytes(matrix)
 
-    buf = (c_ubyte * 16)(*random_input)
-    lib.invert_shift_rows(buf, AES_BLOCK_128)
-    # Assert that the output matches the expected output
-    assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
+        buf = (c_ubyte * 16)(*random_input)
+        lib.invert_shift_rows(buf, AES_BLOCK_128)
+        # Assert that the output matches the expected output
+        assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
