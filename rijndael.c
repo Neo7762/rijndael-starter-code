@@ -122,8 +122,26 @@ void shift_rows(unsigned char *block, aes_block_size_t block_size) {
   block[7] = temp;
 }
 
+//Helper function for mix_columns, which performs multiplication in GF(2^8)
+static unsigned char xtime(unsigned char x) {
+  return (x & 0x80) ? (((x << 1) ^ 0x1B) & 0xFF) : (x << 1);
+}
+
+//Mix a single 4 byte column
+static void mix_single_column(unsigned char *block) {
+  unsigned char t = block[0] ^ block[1] ^ block[2] ^ block[3];
+  unsigned char u = block[0];
+
+  block[0] ^= t ^ xtime(block[0] ^ block[1]);
+  block[1] ^= t ^ xtime(block[1] ^ block[2]);
+  block[2] ^= t ^ xtime(block[2] ^ block[3]);
+  block[3] ^= t ^ xtime(block[3] ^ u);
+}
+
 void mix_columns(unsigned char *block, aes_block_size_t block_size) {
-  // TODO: Implement me!
+  for (size_t i = 0; i < block_size_to_bytes(block_size); i += 4) {
+    mix_single_column(&block[i]);
+  }
 }
 
 /*
@@ -159,7 +177,17 @@ void invert_shift_rows(unsigned char *block, aes_block_size_t block_size) {
 }
 
 void invert_mix_columns(unsigned char *block, aes_block_size_t block_size) {
-  // TODO: Implement me!
+  for (size_t i = 0; i < block_size_to_bytes(block_size); i += 4) {
+  unsigned char u = xtime(xtime(block[i] ^ block[i + 2]));
+  unsigned char v = xtime(xtime(block[i + 1] ^ block[i + 3]));
+
+  block[i] ^= u;
+  block[i + 1] ^= v;
+  block[i + 2] ^= u;
+  block[i + 3] ^= v;
+  }
+
+  mix_columns(block, block_size);
 }
 
 /*
