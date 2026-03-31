@@ -40,7 +40,7 @@ def test_shift_rows_random(lib):
     # Assert that the output matches the expected output
     assert bytes(buf) == expected, f"Failed for input: {bytes(random_input)}"
 
-def test_invert_shift_rows(lib):
+def test_invert_shift_rows_random(lib):
     for _ in range(3):  # Run the test 3 times with random inputs
         # Generate a random 16-byte input
         random_input = ([random.randint(0, 255) for _ in range(16)])
