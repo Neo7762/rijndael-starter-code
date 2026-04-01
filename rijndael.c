@@ -1,7 +1,7 @@
 /*
  * TODO: Add your name and student number here, along with
  *       a brief description of this code.
-  * Leah Marie Ayoub - X00217593
+ * Leah Marie Ayoub - X00217593
  */
 
 #include <stdio.h>
@@ -196,7 +196,10 @@ void invert_mix_columns(unsigned char *block, aes_block_size_t block_size) {
 void add_round_key(unsigned char *block, 
                    unsigned char *round_key,
                    aes_block_size_t block_size) {
-  // TODO: Implement me!
+    for (size_t i = 0; i < block_size_to_bytes(block_size); i++) 
+  {
+    block[i] ^= round_key[i];
+  }
 }
 
 /*
