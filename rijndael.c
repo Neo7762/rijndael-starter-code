@@ -207,9 +207,43 @@ void add_round_key(unsigned char *block,
  * which is a single 128-bit key, it should return a 176-byte
  * vector, containing the 11 round keys one after the other
  */
+
+static const unsigned char r_con[32] = {
+  0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40,
+  0x80, 0x1B, 0x36, 0x6C, 0xD8, 0xAB, 0x4D, 0x9A,
+  0x2F, 0x5E, 0xBC, 0x63, 0xC6, 0x97, 0x35, 0x6A,
+  0xD4, 0xB3, 0x7D, 0xFA, 0xEF, 0xC5, 0x91, 0x39,
+};
+
 unsigned char *expand_key(unsigned char *cipher_key, aes_block_size_t block_size) {
-  // TODO: Implement me!
-  return 0;
+  unsigned char *round_keys = (unsigned char *)malloc(176);
+  memcpy(round_keys, cipher_key, 16); // Copy the original key as the first#
+  for (size_t i = 16; i < 176; i += 4) {
+    unsigned char temp[4];
+    memcpy(temp, &round_keys[i - 4], 4);
+
+    if ((i-16) % 16 == 0) {
+      // Rotate the bytes
+      unsigned char t = temp[0];
+      temp[0] = temp[1];
+      temp[1] = temp[2];
+      temp[2] = temp[3];
+      temp[3] = t;
+
+      // Apply the S-box
+      for (size_t j = 0; j < 4; j++) {
+        temp[j] = s_box[temp[j]];
+      }
+
+      // XOR with the round constant
+      temp[0] ^= r_con[i / 16];
+    }
+
+    for (size_t j = 0; j < 4; j++) {
+      round_keys[i + j] = round_keys[i + j - 16] ^ temp[j];
+    }
+  }
+  return round_keys;
 }
 
 /*

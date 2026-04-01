@@ -6,7 +6,7 @@ import sys
 
 AES_BLOCK_128 = 0
 
-#Import the python implementation of MixColumns for testing
+#Import the python implementation of AddRoundKey for testing
 repo_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(repo_root / "third_party" / "boppreh-aes"))
 import aes
