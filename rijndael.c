@@ -250,14 +250,33 @@ unsigned char *expand_key(unsigned char *cipher_key, aes_block_size_t block_size
  * The implementations of the functions declared in the
  * header file should go here
  */
-unsigned char *aes_encrypt_block(unsigned char *plaintext,
-                                 unsigned char *key,
-                                 aes_block_size_t block_size) {
-  // TODO: Implement me!
-  unsigned char *output =
-      (unsigned char *)malloc(sizeof(unsigned char) * block_size_to_bytes(block_size));
+unsigned char *aes_encrypt_block(unsigned char *plaintext, unsigned char *key, aes_block_size_t block_size) {
+  unsigned char *output =(unsigned char *)malloc(sizeof(unsigned char) * block_size_to_bytes(block_size));
+
+  //copy plaintext to output
+  memcpy(output, plaintext, block_size_to_bytes(block_size));
+  //expand the key to get all round keys
+  unsigned char *round_keys = expand_key(key, block_size);
+      
+  //initial add round key
+  add_round_key(output, round_keys, block_size);
+
+  //9 main rounds
+  for (size_t round = 1; round <= 9; round++) {
+    sub_bytes(output, block_size);
+    shift_rows(output, block_size);
+    mix_columns(output, block_size);
+    add_round_key(output, round_keys + (16 * round), block_size);
+  }
+
+  //final round (no mix columns)
+  sub_bytes(output, block_size);
+  shift_rows(output, block_size);
+  add_round_key(output, round_keys + (16 * 10), block_size);
+
+  free(round_keys);
   return output;
-}
+  }
 
 unsigned char *aes_decrypt_block(unsigned char *ciphertext,
                                  unsigned char *key,
