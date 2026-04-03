@@ -6,6 +6,13 @@ import sys
 
 AES_BLOCK_128 = 0
 
+# Known AES SubBytes test vector:
+SUB_IN = bytes(range(16))
+SUB_OUT = bytes([
+    0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5,
+    0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
+])
+
 #Import the sbox and inv_sbox from the shared library for testing
 repo_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(repo_root / "third_party" / "boppreh-aes"))
@@ -25,6 +32,18 @@ def lib():
 
     return lib
 
+def test_sub_bytes(lib):
+    buf = (c_ubyte * len(SUB_IN))(*SUB_IN)     # mutable c_ubyte array initialized from bytes
+    lib.sub_bytes(buf, AES_BLOCK_128)
+    # Assert that the output matches the expected output
+    assert bytes(buf) == SUB_OUT
+
+def test_invert_sub_bytes(lib):
+    buf = (c_ubyte * len(SUB_OUT))(*SUB_OUT)
+    lib.invert_sub_bytes(buf, AES_BLOCK_128)
+    # Assert that the output matches the expected output
+    assert bytes(buf) == SUB_IN
+    
 def test_sub_bytes_random(lib):
     for _ in range(3):  # Run the test 3 times with random inputs
         # Generate a random 16-byte input

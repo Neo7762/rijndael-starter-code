@@ -6,6 +6,15 @@ import sys
 
 AES_BLOCK_128 = 0
 
+# Known AES ShiftRows test vector:
+SHIFT_ROWS_IN = bytes(range(16))
+SHIFT_ROWS_OUT = bytes([
+    0X00, 0X05, 0X0A, 0X0F, #Row 0: no shift
+    0X04, 0X09, 0X0E, 0X03, #Row 1: shift left by 1
+    0X08, 0X0D, 0X02, 0X07, #Row 2: shift left by 2
+    0X0C, 0X01, 0X06, 0X0B, #Row 3: shift left by 3
+])
+
 #Import the python implementation of ShiftRows for testing
 repo_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(repo_root / "third_party" / "boppreh-aes"))
@@ -24,6 +33,18 @@ def lib():
     lib.invert_shift_rows.restype = None
 
     return lib
+    
+def test_shift_rows(lib):
+    buf = (c_ubyte * len(SHIFT_ROWS_IN))(*SHIFT_ROWS_IN)     # mutable c_ubyte array initialized from bytes
+    lib.shift_rows(buf, AES_BLOCK_128)
+    # Assert that the output matches the expected output
+    assert bytes(buf) == SHIFT_ROWS_OUT
+
+def test_invert_shift_rows(lib):
+    buf = (c_ubyte * len(SHIFT_ROWS_OUT))(*SHIFT_ROWS_OUT)
+    lib.invert_shift_rows(buf, AES_BLOCK_128)
+    # Assert that the output matches the expected output
+    assert bytes(buf) == SHIFT_ROWS_IN
 
 def test_shift_rows_random(lib):
     for _ in range(3):  # Run the test 3 times with random inputs
