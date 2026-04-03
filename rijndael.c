@@ -95,9 +95,25 @@ char *message(char n) {
  * Operations used when encrypting a block
  */
 void sub_bytes(unsigned char *block, aes_block_size_t block_size) {
-  for (size_t i = 0; i < block_size_to_bytes(block_size); i++) 
+  switch (block_size) {
+  case AES_BLOCK_128:
+  for (size_t i = 0; i < 16; i++) 
   {
     block[i] = s_box[block[i]];
+  }
+    break;
+  case AES_BLOCK_256:
+  for (size_t i = 0; i < 32; i++) 
+  {
+    block[i] = s_box[block[i]];
+  }
+    break;
+  case AES_BLOCK_512:
+  for (size_t i = 0; i < 64; i++) 
+  {
+    block[i] = s_box[block[i]];
+  }
+    break;
   }
 }
 
