@@ -278,11 +278,28 @@ unsigned char *aes_encrypt_block(unsigned char *plaintext, unsigned char *key, a
   return output;
   }
 
-unsigned char *aes_decrypt_block(unsigned char *ciphertext,
-                                 unsigned char *key,
-                                 aes_block_size_t block_size) {
-  // TODO: Implement me!
-  unsigned char *output =
-      (unsigned char *)malloc(sizeof(unsigned char) * block_size_to_bytes(block_size));
+unsigned char *aes_decrypt_block(unsigned char *ciphertext, unsigned char *key, aes_block_size_t block_size) {
+  unsigned char *output = (unsigned char *)malloc(sizeof(unsigned char) * block_size_to_bytes(block_size));
+  
+  memcpy(output, ciphertext, block_size_to_bytes(block_size));
+  unsigned char *round_keys = expand_key(key, block_size);
+  
+  // Initial AddRoundKey with last round key
+  add_round_key(output, round_keys + (16 * 10), block_size);
+  invert_shift_rows(output, block_size);
+  invert_sub_bytes(output, block_size);
+  
+  // 9 main rounds (in reverse)
+  for (int i = 9; i >= 1; i--) {
+    add_round_key(output, round_keys + (16 * i), block_size);
+    invert_mix_columns(output, block_size);
+    invert_shift_rows(output, block_size);
+    invert_sub_bytes(output, block_size);
+  }
+  
+  // Final round
+  add_round_key(output, round_keys, block_size);
+  
+  free(round_keys);
   return output;
 }
