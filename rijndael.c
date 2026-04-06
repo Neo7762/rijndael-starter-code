@@ -114,28 +114,49 @@ void sub_bytes(unsigned char *block, aes_block_size_t block_size) {
     block[i] = s_box[block[i]];
   }
     break;
+    default:
+      return; // Invalid block size, do nothing
+  }
+}
+
+static void rotate_column_up(unsigned char *block, size_t row_len, size_t col, size_t shift) {
+  unsigned char temp[16];  // max 4 rows for 128-bit
+  
+  for (size_t i = 0; i < 4; i++) {
+    temp[i] = block[(i * row_len) + col];
+  }
+  
+  for (size_t i = 0; i < 4; i++) {
+    block[(i * row_len) + col] = temp[(i + shift) % 4];
   }
 }
 
 void shift_rows(unsigned char *block, aes_block_size_t block_size) {
- unsigned char temp = block[1];
-  block[1] = block[5];
-  block[5] = block[9];
-  block[9] = block[13];
-  block[13] = temp;
+  size_t row_len;
 
-  temp = block[2];
-  block[2] = block[10];
-  block[10] = temp;
-  temp = block[6];
-  block[6] = block[14];
-  block[14] = temp;
-
-  temp = block[3];
-  block[3] = block[15];
-  block[15] = block[11];
-  block[11] = block[7];
-  block[7] = temp;
+  switch (block_size) {
+    case AES_BLOCK_128:
+      row_len = 4;
+      break;
+    case AES_BLOCK_256:
+      row_len = 8;
+      break;
+    case AES_BLOCK_512:
+      row_len = 16;
+      break;
+    default:
+      return;
+  }
+  
+  // Column 1: shift up by 1
+  rotate_column_up(block, row_len, 1, 1);
+  
+  // Column 2: shift up by 2
+  rotate_column_up(block, row_len, 2, 2);
+  
+  // Column 3: shift up by 3 (or 4 for 512-bit)
+  size_t shift_amount = (block_size == AES_BLOCK_512) ? 4 : 3;
+  rotate_column_up(block, row_len, 3, shift_amount);
 }
 
 //Helper function for mix_columns, which performs multiplication in GF(2^8)
@@ -170,26 +191,44 @@ void invert_sub_bytes(unsigned char *block, aes_block_size_t block_size) {
   }
 }
 
-void invert_shift_rows(unsigned char *block, aes_block_size_t block_size) {
-  unsigned char temp = block[1];
-  block[1] = block[13];
-  block[13] = block[9];
-  block[9] = block[5];
-  block[5] = temp;
-
-  temp = block[2];
-  block[2] = block[10];
-  block[10] = temp;
+static void rotate_column_down(unsigned char *block, size_t row_len, size_t col, size_t shift) {
+  unsigned char temp[16];  // max 4 rows for 128-bit
   
-  temp = block[6];
-  block[6] = block[14];
-  block[14] = temp;
+  for (size_t i = 0; i < 4; i++) {
+    temp[i] = block[(i * row_len) + col];
+  }
+  
+  for (size_t i = 0; i < 4; i++) {
+    block[(i * row_len) + col] = temp[(i - shift + 4) % 4];
+}
+}
 
-  temp = block[3];
-  block[3] = block[7];
-  block[7] = block[11];
-  block[11] = block[15];
-  block[15] = temp;
+void invert_shift_rows(unsigned char *block, aes_block_size_t block_size) {
+  size_t row_len;
+
+  switch (block_size) {
+    case AES_BLOCK_128:
+      row_len = 4;
+      break;
+    case AES_BLOCK_256:
+      row_len = 8;
+      break;
+    case AES_BLOCK_512:
+      row_len = 16;
+      break;
+    default:
+      return;
+  }
+  
+  // Column 1: shift down by 1
+  rotate_column_down(block, row_len, 1, 1);
+  
+  // Column 2: shift down by 2
+  rotate_column_down(block, row_len, 2, 2);
+  
+  // Column 3: shift down by 3 (or 4 for 512-bit)
+  size_t shift_amount = (block_size == AES_BLOCK_512) ? 4 : 3;
+  rotate_column_down(block, row_len, 3, shift_amount);
 }
 
 void invert_mix_columns(unsigned char *block, aes_block_size_t block_size) {

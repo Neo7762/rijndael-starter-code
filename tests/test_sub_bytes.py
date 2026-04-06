@@ -36,13 +36,13 @@ def lib():
 
     return lib
 
-def test_sub_bytes(lib):
+def test_sub_bytes_128(lib):
     buf = (c_ubyte * len(SUB_IN_128))(*SUB_IN_128)
     lib.sub_bytes(buf, AES_BLOCK_128)
     # Assert that the output matches the expected output
     assert bytes(buf) == SUB_OUT_128
 
-def test_invert_sub_bytes(lib):
+def test_invert_sub_bytes_128(lib):
     buf = (c_ubyte * len(SUB_OUT_128))(*SUB_OUT_128)
     lib.invert_sub_bytes(buf, AES_BLOCK_128)
     # Assert that the output matches the expected output
