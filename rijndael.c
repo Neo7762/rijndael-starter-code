@@ -200,7 +200,7 @@ static void rotate_column_down(unsigned char *block, size_t row_len, size_t col,
   
   for (size_t i = 0; i < 4; i++) {
     block[(i * row_len) + col] = temp[(i - shift + 4) % 4];
-}
+  }
 }
 
 void invert_shift_rows(unsigned char *block, aes_block_size_t block_size) {
