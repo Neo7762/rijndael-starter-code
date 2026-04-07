@@ -6,6 +6,8 @@
  * API documentation, but in code form.
  */
 
+#include <stddef.h>
+
 #ifndef RIJNDAEL_H
 #define RIJNDAEL_H
 
