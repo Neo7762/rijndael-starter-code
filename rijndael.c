@@ -6,7 +6,7 @@
  * SubBytes, ShiftRows, MixColumns, and AddRoundKey, as well as their inverses
  * for decryption. The included key expansion function generates the round keys
  * needed for encryption and decryption from the original cipher key. The main
- * encryption functions take a polaintext block and a key, and return the
+ * encryption functions take a plaintext block and a key, and return the
  * corresponding ciphertext block. While the decryption functions take a
  * ciphertext block and a key, and return the original plaintext block.
  */
